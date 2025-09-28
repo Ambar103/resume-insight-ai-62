@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,68 +10,30 @@ import { ATSScore } from "@/components/ATSScore";
 import { SkillsMatching } from "@/components/SkillsMatching";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import heroIllustration from "@/assets/hero-illustration.jpg";
+import { uploadAndAnalyzeResume, getJobRequirements, type AnalysisResult } from "@/services/resumeService";
 
 const Index = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisComplete, setAnalysisComplete] = useState(false);
-  const [requiredSkills, setRequiredSkills] = useState<string[]>([
-    "React", "TypeScript", "Node.js", "Python", "AWS"
-  ]);
+  const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
 
-  // Real data from parsed Ambar's resume
-  const realATSScore = {
-    score: 88,
-    breakdown: {
-      keywords: 92,
-      format: 85,
-      experience: 88,
-      skills: 90
-    }
-  };
-
-  const realSkills = [
-    { name: "Python", found: true, relevance: "high" as const },
-    { name: "HTML", found: true, relevance: "high" as const },
-    { name: "CSS", found: true, relevance: "high" as const },
-    { name: "JavaScript", found: true, relevance: "high" as const },
-    { name: "Machine Learning", found: true, relevance: "high" as const },
-    { name: "TensorFlow", found: true, relevance: "high" as const },
-    { name: "React", found: false, relevance: "high" as const },
-    { name: "TypeScript", found: false, relevance: "medium" as const },
-    { name: "Node.js", found: false, relevance: "medium" as const },
-    { name: "AWS", found: false, relevance: "medium" as const },
-    { name: "OpenCV", found: true, relevance: "medium" as const },
-    { name: "scikit-learn", found: true, relevance: "medium" as const },
-    { name: "Keras", found: true, relevance: "low" as const },
-    { name: "NumPy", found: true, relevance: "low" as const },
-    { name: "Pandas", found: true, relevance: "low" as const }
-  ];
-
-  const realPersonInfo = {
-    name: "AMBAR S",
-    email: "ai.ambarssit@gmail.com", 
-    phone: "+91-7022244341",
-    location: "India",
-    title: "AIML Engineer",
-    experience: "2+ years",
-    education: [
-      "B.E. Artificial Intelligence & Machine Learning - Sri Siddhartha Institute of Technology (2022) - CGPA: 9.04/10",
-      "Pre-University Course (PUC) - Narayana PUC (2020) - 86%",
-      "SSLC (10th Board) - TVS School (2019) - 77%"
-    ],
-    certifications: [
-      "Artificial Intelligence Internship - Skilldunia",
-      "AI & Prompt Engineering Internship - VaultOfCode", 
-      "Ethical Hacking Course - NPTEL"
-    ]
-  };
-
-  const realCompatibility = {
-    score: 92,
-    verdict: "excellent" as const,
-    reasoning: "AMBAR S is an exceptional candidate with a strong foundation in AI/ML and web development. With a CGPA of 9.04/10 in AI&ML, hands-on experience in computer vision projects, and proficiency in both technical skills (Python, TensorFlow, HTML/CSS/JavaScript) and soft skills (leadership, problem-solving), they demonstrate excellent compatibility for AI-driven development roles. Their practical project experience including deadlift posture detection, text-to-image generation, and digit recognition systems showcase real-world application abilities. The continuous learning mindset evidenced by multiple internships and certifications makes them an ideal fit for innovative technology positions."
-  };
+  // Load job requirements on component mount
+  useEffect(() => {
+    const loadJobRequirements = async () => {
+      try {
+        const jobReq = await getJobRequirements();
+        setRequiredSkills(jobReq.required_skills || []);
+      } catch (error) {
+        console.error('Error loading job requirements:', error);
+        // Fallback to default skills
+        setRequiredSkills(["React", "TypeScript", "Node.js", "Python", "AWS"]);
+      }
+    };
+    
+    loadJobRequirements();
+  }, []);
 
   const handleFileUpload = (file: File) => {
     setUploadedFile(file);
@@ -99,15 +61,24 @@ const Index = () => {
       description: "This may take a few moments."
     });
 
-    // Simulate analysis time
-    setTimeout(() => {
+    try {
+      const result = await uploadAndAnalyzeResume(uploadedFile, requiredSkills);
+      setAnalysisResult(result);
       setIsAnalyzing(false);
       setAnalysisComplete(true);
       toast({
         title: "Analysis complete!",
         description: "Your resume has been successfully analyzed."
       });
-    }, 3000);
+    } catch (error) {
+      console.error('Error analyzing resume:', error);
+      setIsAnalyzing(false);
+      toast({
+        title: "Analysis failed",
+        description: "There was an error analyzing your resume. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -202,56 +173,65 @@ const Index = () => {
                     <Card className="p-6 bg-gradient-card shadow-card text-center">
                       <BarChart3 className="h-8 w-8 text-primary mx-auto mb-2" />
                       <h3 className="font-semibold text-foreground">ATS Score</h3>
-                       <p className="text-2xl font-bold text-primary">{realATSScore.score}%</p>
+                       <p className="text-2xl font-bold text-primary">{analysisResult?.atsScore.score || 0}%</p>
                      </Card>
                      <Card className="p-6 bg-gradient-card shadow-card text-center">
                        <Users className="h-8 w-8 text-success mx-auto mb-2" />
                        <h3 className="font-semibold text-foreground">Skills Match</h3>
                        <p className="text-2xl font-bold text-success">
-                         {realSkills.filter(s => s.found).length}/{requiredSkills.length}
+                         {analysisResult?.skillsAnalysis.filter(s => s.found).length || 0}/{requiredSkills.length}
                        </p>
                      </Card>
                      <Card className="p-6 bg-gradient-card shadow-card text-center">
                        <Brain className="h-8 w-8 text-info mx-auto mb-2" />
                        <h3 className="font-semibold text-foreground">Compatibility</h3>
-                       <p className="text-2xl font-bold text-info">{realCompatibility.score}%</p>
+                       <p className="text-2xl font-bold text-info">{analysisResult?.compatibility.score || 0}%</p>
                     </Card>
                   </div>
                 </TabsContent>
 
                  <TabsContent value="ats">
-                   <ATSScore score={realATSScore.score} breakdown={realATSScore.breakdown} />
+                   {analysisResult && (
+                     <ATSScore 
+                       score={analysisResult.atsScore.score} 
+                       breakdown={analysisResult.atsScore.breakdown} 
+                     />
+                   )}
                  </TabsContent>
 
                  <TabsContent value="skills">
-                   <SkillsMatching
-                     detectedSkills={realSkills}
-                     requiredSkills={requiredSkills}
-                     onRequiredSkillsChange={setRequiredSkills}
-                   />
+                   {analysisResult && (
+                     <SkillsMatching
+                       detectedSkills={analysisResult.skillsAnalysis}
+                       requiredSkills={requiredSkills}
+                       onRequiredSkillsChange={setRequiredSkills}
+                     />
+                   )}
                  </TabsContent>
 
                  <TabsContent value="person">
-                   <AnalysisResults
-                     personInfo={realPersonInfo}
-                     overallCompatibility={realCompatibility}
-                   />
+                   {analysisResult && (
+                     <AnalysisResults
+                       personInfo={analysisResult.personalInfo}
+                       overallCompatibility={analysisResult.compatibility}
+                     />
+                   )}
                  </TabsContent>
               </Tabs>
             </section>
           )}
 
           {/* Information Card for Python Backend */}
-          <Card className="p-6 bg-info/5 border-info/20">
+          <Card className="p-6 bg-success/5 border-success/20">
             <div className="flex items-start space-x-3">
-              <Brain className="h-5 w-5 text-info mt-0.5" />
+              <Brain className="h-5 w-5 text-success mt-0.5" />
               <div className="space-y-2">
-                <h3 className="font-semibold text-foreground">About Python Backend Integration</h3>
+                <h3 className="font-semibold text-foreground">✅ Python Backend Integrated</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  This frontend interface is designed to work with a Python backend for actual resume processing. 
-                  The current version shows mock data to demonstrate the UI. To implement real analysis, 
-                  you'll need to integrate with Python libraries like spaCy, NLTK, or transformers for NLP processing, 
-                  and create APIs that this frontend can call.
+                  Your resume analyzer now includes real Python-powered backend processing! The system uses 
+                  advanced NLP techniques to extract personal information, calculate ATS scores, analyze skills, 
+                  and provide compatibility assessments. All analysis is performed server-side using sophisticated 
+                  algorithms for accurate resume evaluation.
                 </p>
               </div>
             </div>
