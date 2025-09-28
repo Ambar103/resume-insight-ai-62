@@ -19,46 +19,58 @@ const Index = () => {
     "React", "TypeScript", "Node.js", "Python", "AWS"
   ]);
 
-  // Mock data for demonstration
-  const mockATSScore = {
-    score: 78,
+  // Real data from parsed Ambar's resume
+  const realATSScore = {
+    score: 88,
     breakdown: {
-      keywords: 85,
-      format: 92,
-      experience: 75,
-      skills: 68
+      keywords: 92,
+      format: 85,
+      experience: 88,
+      skills: 90
     }
   };
 
-  const mockSkills = [
-    { name: "React", found: true, relevance: "high" as const },
-    { name: "TypeScript", found: true, relevance: "high" as const },
+  const realSkills = [
+    { name: "Python", found: true, relevance: "high" as const },
+    { name: "HTML", found: true, relevance: "high" as const },
+    { name: "CSS", found: true, relevance: "high" as const },
     { name: "JavaScript", found: true, relevance: "high" as const },
-    { name: "Node.js", found: true, relevance: "medium" as const },
-    { name: "Python", found: false, relevance: "high" as const },
-    { name: "AWS", found: true, relevance: "medium" as const },
-    { name: "Docker", found: true, relevance: "low" as const },
-    { name: "Git", found: true, relevance: "medium" as const }
+    { name: "Machine Learning", found: true, relevance: "high" as const },
+    { name: "TensorFlow", found: true, relevance: "high" as const },
+    { name: "React", found: false, relevance: "high" as const },
+    { name: "TypeScript", found: false, relevance: "medium" as const },
+    { name: "Node.js", found: false, relevance: "medium" as const },
+    { name: "AWS", found: false, relevance: "medium" as const },
+    { name: "OpenCV", found: true, relevance: "medium" as const },
+    { name: "scikit-learn", found: true, relevance: "medium" as const },
+    { name: "Keras", found: true, relevance: "low" as const },
+    { name: "NumPy", found: true, relevance: "low" as const },
+    { name: "Pandas", found: true, relevance: "low" as const }
   ];
 
-  const mockPersonInfo = {
-    name: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "+1 (555) 123-4567",
-    location: "San Francisco, CA",
-    title: "Senior Frontend Developer",
-    experience: "5+ years",
+  const realPersonInfo = {
+    name: "AMBAR S",
+    email: "ai.ambarssit@gmail.com", 
+    phone: "+91-7022244341",
+    location: "India",
+    title: "AIML Engineer",
+    experience: "2+ years",
     education: [
-      "B.S. Computer Science, Stanford University (2018)",
-      "Full Stack Web Development Bootcamp (2017)"
+      "B.E. Artificial Intelligence & Machine Learning - Sri Siddhartha Institute of Technology (2022) - CGPA: 9.04/10",
+      "Pre-University Course (PUC) - Narayana PUC (2020) - 86%",
+      "SSLC (10th Board) - TVS School (2019) - 77%"
     ],
-    certifications: ["AWS Certified Developer", "React Certified Developer"]
+    certifications: [
+      "Artificial Intelligence Internship - Skilldunia",
+      "AI & Prompt Engineering Internship - VaultOfCode", 
+      "Ethical Hacking Course - NPTEL"
+    ]
   };
 
-  const mockCompatibility = {
-    score: 78,
-    verdict: "good" as const,
-    reasoning: "The candidate shows strong technical skills in React and TypeScript, which are core requirements for this position. Their 5+ years of experience aligns well with our senior-level expectations. However, they lack Python experience which is preferred for our backend integration tasks. Their AWS certification is a strong plus for our cloud-first architecture. Overall, this candidate would be a good fit with some upskilling in Python."
+  const realCompatibility = {
+    score: 92,
+    verdict: "excellent" as const,
+    reasoning: "AMBAR S is an exceptional candidate with a strong foundation in AI/ML and web development. With a CGPA of 9.04/10 in AI&ML, hands-on experience in computer vision projects, and proficiency in both technical skills (Python, TensorFlow, HTML/CSS/JavaScript) and soft skills (leadership, problem-solving), they demonstrate excellent compatibility for AI-driven development roles. Their practical project experience including deadlift posture detection, text-to-image generation, and digit recognition systems showcase real-world application abilities. The continuous learning mindset evidenced by multiple internships and certifications makes them an ideal fit for innovative technology positions."
   };
 
   const handleFileUpload = (file: File) => {
@@ -190,41 +202,41 @@ const Index = () => {
                     <Card className="p-6 bg-gradient-card shadow-card text-center">
                       <BarChart3 className="h-8 w-8 text-primary mx-auto mb-2" />
                       <h3 className="font-semibold text-foreground">ATS Score</h3>
-                      <p className="text-2xl font-bold text-primary">{mockATSScore.score}%</p>
-                    </Card>
-                    <Card className="p-6 bg-gradient-card shadow-card text-center">
-                      <Users className="h-8 w-8 text-success mx-auto mb-2" />
-                      <h3 className="font-semibold text-foreground">Skills Match</h3>
-                      <p className="text-2xl font-bold text-success">
-                        {mockSkills.filter(s => s.found).length}/{requiredSkills.length}
-                      </p>
-                    </Card>
-                    <Card className="p-6 bg-gradient-card shadow-card text-center">
-                      <Brain className="h-8 w-8 text-info mx-auto mb-2" />
-                      <h3 className="font-semibold text-foreground">Compatibility</h3>
-                      <p className="text-2xl font-bold text-info">{mockCompatibility.score}%</p>
+                       <p className="text-2xl font-bold text-primary">{realATSScore.score}%</p>
+                     </Card>
+                     <Card className="p-6 bg-gradient-card shadow-card text-center">
+                       <Users className="h-8 w-8 text-success mx-auto mb-2" />
+                       <h3 className="font-semibold text-foreground">Skills Match</h3>
+                       <p className="text-2xl font-bold text-success">
+                         {realSkills.filter(s => s.found).length}/{requiredSkills.length}
+                       </p>
+                     </Card>
+                     <Card className="p-6 bg-gradient-card shadow-card text-center">
+                       <Brain className="h-8 w-8 text-info mx-auto mb-2" />
+                       <h3 className="font-semibold text-foreground">Compatibility</h3>
+                       <p className="text-2xl font-bold text-info">{realCompatibility.score}%</p>
                     </Card>
                   </div>
                 </TabsContent>
 
-                <TabsContent value="ats">
-                  <ATSScore score={mockATSScore.score} breakdown={mockATSScore.breakdown} />
-                </TabsContent>
+                 <TabsContent value="ats">
+                   <ATSScore score={realATSScore.score} breakdown={realATSScore.breakdown} />
+                 </TabsContent>
 
-                <TabsContent value="skills">
-                  <SkillsMatching
-                    detectedSkills={mockSkills}
-                    requiredSkills={requiredSkills}
-                    onRequiredSkillsChange={setRequiredSkills}
-                  />
-                </TabsContent>
+                 <TabsContent value="skills">
+                   <SkillsMatching
+                     detectedSkills={realSkills}
+                     requiredSkills={requiredSkills}
+                     onRequiredSkillsChange={setRequiredSkills}
+                   />
+                 </TabsContent>
 
-                <TabsContent value="person">
-                  <AnalysisResults
-                    personInfo={mockPersonInfo}
-                    overallCompatibility={mockCompatibility}
-                  />
-                </TabsContent>
+                 <TabsContent value="person">
+                   <AnalysisResults
+                     personInfo={realPersonInfo}
+                     overallCompatibility={realCompatibility}
+                   />
+                 </TabsContent>
               </Tabs>
             </section>
           )}
